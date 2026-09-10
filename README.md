@@ -34,3 +34,8 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 1. IN
 1. BETWEEN
 1. LIKE
+1. AS
+
+## Capitulo 05 Operadores Aritmeticos
+
+1. +, -, \* , /
