@@ -1,8 +1,7 @@
-/*
-LA PALABRA CLAVE AS
 
-Para cambiar los nombres de las columnas, usa la palabra AS:
-*/
+-- LA PALABRA CLAVE AS
+
+/* Para cambiar los nombres de las columnas, usa la palabra AS: */
 
 SELECT col1 AS firstColumn, col2 AS secondColumn
 FROM table1;

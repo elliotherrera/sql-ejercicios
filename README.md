@@ -39,3 +39,4 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 ## Capitulo 05 Operadores Aritmeticos
 
 1. +, -, \* , /
+2. Columnas Matematicas
