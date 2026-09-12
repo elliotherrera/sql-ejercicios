@@ -41,3 +41,4 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 1. +, -, \* , /
 2. Columnas Matematicas
 3. Operador Modulo %
+4. Funcion ROUND()
