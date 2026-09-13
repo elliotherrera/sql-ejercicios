@@ -42,3 +42,9 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 2. Columnas Matematicas
 3. Operador Modulo %
 4. Funcion ROUND()
+
+## Capitulo 06 Desafios Introductorios
+
+## Capitulo 07 Fechas
+
+1. Manejo de fechas YYYY-MM-DD
