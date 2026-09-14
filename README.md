@@ -48,3 +48,5 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 ## Capitulo 07 Fechas
 
 1. Manejo de fechas YYYY-MM-DD
+2. TO_DAYS()
+3. CURDATE(), CURRENT_DATE(), DATE(NOW()), DATE_FORMAT()
