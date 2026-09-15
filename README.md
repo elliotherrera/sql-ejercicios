@@ -50,3 +50,7 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 1. Manejo de fechas YYYY-MM-DD
 2. TO_DAYS()
 3. CURDATE(), CURRENT_DATE(), DATE(NOW()), DATE_FORMAT()
+
+## Capitulo 08 Estadistica
+
+1. Agregacion Integrada, parte 1 (MAX, MIN, AVG, COUNT, SUM)
