@@ -54,4 +54,5 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 ## Capitulo 08 Estadistica
 
 1. Agregacion Integrada, parte 1 (MAX, MIN, AVG, COUNT, SUM)
-2. Agregacion Integrada, Parte 2 Subconsultas
+2. Agregacion Integrada, parte 2 Subconsultas
+3. Agrupacion, parte 1 (GROUP BY)
