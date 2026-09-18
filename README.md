@@ -57,3 +57,4 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 2. Agregacion Integrada, parte 2 Subconsultas
 3. Agrupacion, parte 1 (GROUP BY)
 4. Agrupacion, parte 2 (HAVING)
+5. Subconsultas, parte 1
