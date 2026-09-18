@@ -56,3 +56,4 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 1. Agregacion Integrada, parte 1 (MAX, MIN, AVG, COUNT, SUM)
 2. Agregacion Integrada, parte 2 Subconsultas
 3. Agrupacion, parte 1 (GROUP BY)
+4. Agrupacion, parte 2 (HAVING)
