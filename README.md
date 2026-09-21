@@ -59,3 +59,4 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 4. Agrupacion, parte 2 (HAVING)
 5. Subconsultas, parte 1
 6. Subconsultas, parte 2 (subconsultas: escalares, de fila y de tabla)
+7. Ejercicios
