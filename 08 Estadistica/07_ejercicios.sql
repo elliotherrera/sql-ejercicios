@@ -51,3 +51,38 @@ WHERE has_lights = 1 AND model IS NOT NULL
 GROUP BY brand
 ORDER BY avg_price;
 
+
+-- CAFETERIA
+
+/* Tablas y columnas disponibles:
+    beans: brand, density, diameter_wide, shade
+
+Eres el propietario de una cafetería. Hay muchos clientes esperando sus pedidos. Solo puedes usar un tipo de granos de café cada día.
+
+Hay varios criterios para seleccionar qué granos usar. Primero, debemos filtrar los granos según estas condiciones:
+
+    - Todos los granos deben tener un diámetro mayor que el diámetro promedio de todos los granos de la tabla
+    - Para los granos claros: conservar solo aquellos cuya proporción entre densidad y diámetro sea mayor que 0.01
+    -Para los granos oscuros: conservar todos
+    -Para los granos semioscuros: excluirlos todos (se consideran inadecuados)
+
+Para cada marca que cumpla estos criterios, calcula su densidad promedio. Conserva solo las marcas cuya densidad promedio sea menor que 0.8.
+
+Devuelve el nombre de la marca y su densidad promedio (nombra la columna avg_density) redondeada a 3 decimales. Ordena los resultados por densidad promedio en orden ascendente. */
+
+
+-- Filtra primero las filas individuales, luego agrúpalas, luego filtra los grupos
+SELECT brand, ROUND(AVG(density), 3) AS avg_density
+FROM beans
+-- Dos condiciones a nivel de fila aquí: una sobre size, una que combina las reglas de type entre paréntesis
+WHERE diameter_wide > (
+    SELECT AVG(diameter_wide)
+    FROM beans
+)
+  AND ((shade = 'light' AND (density/diameter_wide) > 0.01) OR (shade = 'dark') OR (shade != 'semi-dark'))
+GROUP BY brand
+HAVING avg_density < 0.8
+ORDER BY avg_density;
+
+
+

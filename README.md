@@ -60,3 +60,7 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 5. Subconsultas, parte 1
 6. Subconsultas, parte 2 (subconsultas: escalares, de fila y de tabla)
 7. Ejercicios
+
+## Capitulo 09 Multiples Tablas
+
+1. INNER JOIN
