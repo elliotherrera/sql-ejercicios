@@ -64,3 +64,4 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 ## Capitulo 09 Multiples Tablas
 
 1. INNER JOIN
+2. Autounion
