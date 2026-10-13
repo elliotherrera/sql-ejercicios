@@ -65,3 +65,5 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 
 1. INNER JOIN
 2. Autounion
+3. JOINS
+4. UNION y UNION ALL
