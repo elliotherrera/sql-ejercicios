@@ -74,9 +74,9 @@ ORDER BY total_sales DESC;
 
 -- BLOQUE 1: SETUP
 
-DROP DATABASE IF EXISTS practica;
-CREATE DATABASE practica;
-USE practica;
+DROP DATABASE IF EXISTS practica_union;
+CREATE DATABASE practica_union;
+USE practica_union;
 
 -- ESQUEMA: VENTAS
 CREATE TABLE ventas_web (
