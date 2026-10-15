@@ -67,3 +67,4 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 2. Autounion
 3. JOINS
 4. UNION y UNION ALL
+5. CTE con WITH y AS
