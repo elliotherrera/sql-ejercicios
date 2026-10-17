@@ -291,26 +291,76 @@ WITH mejor_pago AS (
 		       ORDER BY salario DESC, fecha_ingreso
 		   ) AS row_num
 	FROM empleados
+	WHERE salario IS NOT NULL
 )
-SELECT nombre, area, salario, row_num
+SELECT nombre, area, salario
 FROM mejor_pago
-WHERE salario IS NOT NULL AND row_num < 3;
+WHERE row_num < 3;
 
 
 
 /* 2. Obtené la primera compra de cada cliente considerando solo las ventas entre el 2026-01-01 y el 2026-06-30 (ambos inclusive). Ante empate de fecha, quedate con la de menor id_venta. Mostrá id_venta, cliente, total y fecha_venta.
    ventas (id_venta, cliente, categoria, total, fecha_venta) */
 
+WITH primera_compra AS (
+	SELECT id_venta, cliente, total, fecha_venta,
+		   ROW_NUMBER() OVER(
+		   PARTITION BY cliente
+		   ORDER BY fecha_venta, id_venta
+		   ) AS num_compra
+	FROM ventas
+	WHERE fecha_venta BETWEEN '2026-01-01' AND '2026-06-30'
+)
+SELECT id_venta, cliente, total, fecha_venta
+FROM primera_compra
+WHERE num_compra = 1;
+
 
 /* 3. Obtené la ciudad más poblada de cada país, pero solo de los países de America y Europa. Mostrá el nombre del país, el nombre de la ciudad y la población de la ciudad, ordenado por población de la ciudad de mayor a menor.
    paises (id_pais, nombre, continente, poblacion)
    ciudades (id_ciudad, id_pais, nombre, poblacion) */
+
+WITH ciudades_poblacion AS (
+SELECT pa.nombre AS pais,
+	   ci.nombre AS ciudad,
+	   ci.poblacion AS ciudad_poblacion,
+	   ROW_NUMBER() OVER(
+	   PARTITION BY pa.nombre
+	   ORDER BY ci.poblacion DESC
+	   ) AS mas_poblada
+FROM ciudades AS ci
+JOIN paises AS pa
+	ON ci.id_pais = pa.id_pais
+WHERE pa.continente IN ('America', 'Europa')
+)
+SELECT pais, ciudad, ciudad_poblacion
+FROM ciudades_poblacion
+WHERE mas_poblada = 1
+ORDER BY ciudad_poblacion DESC;
 
 
 /* 4. Unificá ambos depósitos y devolvé una sola fila por sku: la de fecha_carga más reciente. Ante empate de fecha, quedate con la del deposito_norte. Mostrá sku, descripcion, stock, fecha_carga y de qué depósito viene la fila (alias origen).
    deposito_norte (id_item, sku, descripcion, stock, fecha_carga)
    deposito_sur (id_item, sku, descripcion, stock, fecha_carga) */
 
+WITH unido AS (
+	SELECT id_item, sku, descripcion, stock, fecha_carga, 'norte' AS origen
+	FROM deposito_norte
+	UNION ALL
+	SELECT id_item, sku, descripcion, stock, fecha_carga, 'sur' AS origen
+	FROM deposito_sur
+),
+fecha_reciente AS (
+	SELECT id_item, sku, descripcion, stock, fecha_carga, origen,
+		   ROW_NUMBER() OVER(
+		       PARTITION BY sku
+		       ORDER BY fecha_carga DESC, origen
+		   ) AS reciente
+	FROM unido
+)
+SELECT sku, descripcion, stock, fecha_carga, origen
+FROM fecha_reciente
+WHERE reciente = 1;
 
 
 -- POR QUE NO FUNCIONA
@@ -321,33 +371,74 @@ SELECT nombre, area, salario,
        ROW_NUMBER() OVER (PARTITION BY area ORDER BY salario DESC) AS fila
 FROM empleados
 WHERE fila <= 2;
-/* razon del error */
+/* razon del error 
+   errro muy comun, el WHERE se ejecuta antes que SELECT por lo que no reconoce fila, una solucion que se me ocurre es generar una cte y luego pasar el filtro WHERE:*/
+
+WITH mejor_pagos AS (
+SELECT nombre, area, salario,
+       ROW_NUMBER() OVER (
+           PARTITION BY area 
+           ORDER BY salario DESC
+       ) AS fila
+FROM empleados
+)
+SELECT *
+FROM mejor_pagos
+WHERE fila <= 2;
 
 
 /* 2. Se quería obtener TODAS las ventas que alcanzan el mayor total de su categoría (si hay empate, deben aparecer todas las empatadas). La query se ejecuta sin errores pero el resultado no es el esperado. ¿Por qué? Explicá el motivo y cómo corregirla.
    ventas (id_venta, cliente, categoria, total, fecha_venta) */
 WITH numeradas AS (
     SELECT id_venta, categoria, total,
-           ROW_NUMBER() OVER (PARTITION BY categoria ORDER BY total DESC) AS fila
+           ROW_NUMBER() OVER (
+               PARTITION BY categoria 
+               ORDER BY total DESC
+           ) AS fila
     FROM ventas
 )
 SELECT id_venta, categoria, total
 FROM numeradas
 WHERE fila = 1;
-/* razon del error */
-
+/* razon del error 
+   no es posible resolver esto con ROW_NUMBER, nos adelantamos un poco al tema de RANK() la estructura es la misma solo que cuando hay empate les asigna el mismo numero y se salta la cantidad de puestos equivalente a los numeros de empates, solucion: */
+WITH numeradas AS (
+    SELECT id_venta, categoria, total,
+           RANK() OVER (
+               PARTITION BY categoria 
+               ORDER BY total DESC
+           ) AS puesto
+    FROM ventas
+)
+SELECT id_venta, categoria, total
+FROM numeradas
+WHERE puesto = 1;
 
 /* 3. Se quería obtener las 2 ciudades más pobladas de cada país usando una subconsulta, pero la query falla. ¿Por qué? Explicá el motivo y cómo corregirla.
    ciudades (id_ciudad, id_pais, nombre, poblacion) */
 SELECT id_ciudad, id_pais, nombre, poblacion
 FROM (
     SELECT id_ciudad, id_pais, nombre, poblacion,
-           ROW_NUMBER() OVER (PARTITION BY id_pais ORDER BY poblacion DESC) AS fila
+           ROW_NUMBER() OVER (
+               PARTITION BY id_pais 
+               ORDER BY poblacion DESC
+           ) AS fila
     FROM ciudades
 )
 WHERE fila <= 2;
-/* razon del error */
+/* razon del error 
+   a la subconsulta FROM le hace falta un aliasing AS, solucion: */
 
+SELECT id_ciudad, id_pais, nombre, poblacion
+FROM (
+    SELECT id_ciudad, id_pais, nombre, poblacion,
+           ROW_NUMBER() OVER (
+               PARTITION BY id_pais 
+               ORDER BY poblacion DESC
+           ) AS fila
+    FROM ciudades
+) AS mas_pobladas
+WHERE fila <= 2;
 
 
 

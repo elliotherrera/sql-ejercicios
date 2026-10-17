@@ -68,3 +68,9 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 3. JOINS
 4. UNION y UNION ALL
 5. CTE con WITH y AS
+
+## Capitulo 10 Practicas
+
+## Capitulo 11 Window Functions
+
+1. Funcion de ventana ROW_NUMBER()
