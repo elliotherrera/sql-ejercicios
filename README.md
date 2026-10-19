@@ -74,3 +74,9 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 ## Capitulo 11 Window Functions
 
 1. Funcion de ventana ROW_NUMBER()
+2. Criterio ORDER BY
+
+
+
+
+

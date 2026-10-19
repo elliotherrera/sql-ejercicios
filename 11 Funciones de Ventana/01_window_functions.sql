@@ -321,17 +321,17 @@ WHERE num_compra = 1;
    ciudades (id_ciudad, id_pais, nombre, poblacion) */
 
 WITH ciudades_poblacion AS (
-SELECT pa.nombre AS pais,
-	   ci.nombre AS ciudad,
-	   ci.poblacion AS ciudad_poblacion,
-	   ROW_NUMBER() OVER(
-	   PARTITION BY pa.nombre
-	   ORDER BY ci.poblacion DESC
-	   ) AS mas_poblada
-FROM ciudades AS ci
-JOIN paises AS pa
-	ON ci.id_pais = pa.id_pais
-WHERE pa.continente IN ('America', 'Europa')
+	SELECT pa.nombre AS pais,
+		   ci.nombre AS ciudad,
+		   ci.poblacion AS ciudad_poblacion,
+		   ROW_NUMBER() OVER(
+		   PARTITION BY pa.nombre
+		   ORDER BY ci.poblacion DESC
+		   ) AS mas_poblada
+	FROM ciudades AS ci
+	JOIN paises AS pa
+		ON ci.id_pais = pa.id_pais
+	WHERE pa.continente IN ('America', 'Europa')
 )
 SELECT pais, ciudad, ciudad_poblacion
 FROM ciudades_poblacion
