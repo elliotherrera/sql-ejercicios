@@ -75,7 +75,7 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 
 1. Funcion de ventana ROW_NUMBER()
 2. Criterio ORDER BY
-
+3. Funciones LEAD y LAG
 
 
 
