@@ -419,17 +419,85 @@ ORDER BY sucursal, mes;
    cambio inmediatamente anterior del mismo empleado.
    cambios_salario (id_cambio, empleado, fecha_cambio, salario) */
 
+WITH vista_salarios AS (
+SELECT
+	empleado, fecha_cambio, salario,
+	LEAD(salario) OVER(
+		PARTITION BY empleado
+		ORDER BY fecha_cambio
+	) AS salario_siguiente
+FROM cambios_salario
+)
+SELECT
+	empleado, count(*) AS veces_aumento
+FROM vista_salarios
+WHERE salario < salario_siguiente
+GROUP BY empleado
+HAVING veces_aumento >= 2;
+
 
 /* 3. Para cada lectura, calculá cuántos días pasan hasta la siguiente lectura del
    mismo producto. Mostrá solo las lecturas en las que ese intervalo supera los
    7 días, con producto, fecha_lectura y dias_hasta_siguiente.
    lecturas_stock (id_lectura, producto, fecha_lectura, unidades) */
 
+WITH dias_lectura AS (
+SELECT 
+	id_lectura, producto, fecha_lectura,
+	LEAD(fecha_lectura) OVER(
+		PARTITION BY producto
+		ORDER BY fecha_lectura
+	) AS fecha_lectura_sgt
+FROM lecturas_stock
+),
+CTE_numero_dias AS (
+SELECT
+	id_lectura, producto, fecha_lectura, fecha_lectura_sgt,
+	TO_DAYS(fecha_lectura_sgt) - TO_DAYS(fecha_lectura) AS dias_sgt_lectura
+FROM dias_lectura
+)
+SELECT producto, fecha_lectura, dias_sgt_lectura
+FROM CTE_numero_dias
+WHERE dias_sgt_lectura > 7;
+
 
 /* 4. Mostrá, para cada país (nombre y continente), su medición de población más
    reciente junto con la diferencia de población respecto a su medición anterior.
    paises (id_pais, nombre, continente)
    poblacion_paises (id_registro, id_pais, anio, poblacion) */
+
+WITH CTE_pais_continente AS (
+SELECT
+	nombre, continente, anio, poblacion
+FROM poblacion_paises AS pp
+JOIN paises AS p
+	ON pp.id_pais = p.id_pais
+),
+CTE_2 AS (
+SELECT
+	nombre, continente, anio, poblacion,
+	LAG(poblacion) OVER(
+		PARTITION BY nombre
+		ORDER BY anio
+	) AS poblacion_anterior
+FROM CTE_pais_continente
+),
+CTE_3 AS (
+SELECT 
+	nombre, continente, anio, poblacion,
+	ROW_NUMBER() OVER(
+		PARTITION BY nombre
+		ORDER BY anio DESC
+	) AS ultimas_mediciones,
+	poblacion - poblacion_anterior AS diferencia_poblacion
+FROM CTE_2
+)
+SELECT nombre, continente, anio, poblacion, diferencia_poblacion
+FROM CTE_3
+WHERE ultimas_mediciones = 1;
+ 
+
+
 
 
 -- POR QUE NO FUNCIONA
@@ -442,7 +510,20 @@ SELECT empleado, fecha_cambio, salario,
        LAG(salario) OVER (PARTITION BY empleado ORDER BY fecha_cambio) AS salario_anterior
 FROM cambios_salario
 WHERE LAG(salario) OVER (PARTITION BY empleado ORDER BY fecha_cambio) IS NOT NULL;
-/* razon del error */
+/* razon del error: WHERE se evalua antes de que se calculen las funciones de ventana*/
+
+WITH CTE_salario_anterior AS (
+SELECT 
+	empleado, fecha_cambio, salario,
+    LAG(salario) OVER (
+    	PARTITION BY empleado 
+    	ORDER BY fecha_cambio
+    ) AS salario_anterior
+FROM cambios_salario
+)
+SELECT *
+FROM CTE_salario_anterior 
+WHERE salario_anterior IS NOT NULL;
 
 
 /* 2. Se quiere ver cuánto cambiaron las unidades de cada producto respecto a su
@@ -453,8 +534,15 @@ SELECT producto, fecha_lectura, unidades,
        unidades - LAG(unidades) OVER (ORDER BY fecha_lectura) AS cambio_unidades
 FROM lecturas_stock
 ORDER BY producto, fecha_lectura;
-/* razon del error */
-
+/* razon del error es necesario colocar PARTITION BY para especificar contra que comparar anteriormente, asi no entreverar resultados dee otros productos, sino del mismo*/
+SELECT 
+	producto, fecha_lectura, unidades,
+    unidades - LAG(unidades) OVER (
+    		   PARTITION BY producto
+    		   ORDER BY fecha_lectura
+    		   ) AS cambio_unidades
+FROM lecturas_stock
+ORDER BY producto, fecha_lectura;
 
 /* 3. Se quiere mostrar los ingresos, los del mes anterior y la variación entre ambos
    para cada sucursal. ¿Por qué falla esta query? Explicá el motivo y cómo corregirla.
@@ -463,7 +551,19 @@ SELECT sucursal, mes, ingresos,
        LAG(ingresos) OVER (PARTITION BY sucursal ORDER BY mes) AS anterior,
        ingresos - anterior AS variacion
 FROM ingresos_mensuales;
-/* razon del error */
+/* razon del error: en el SELECT se declara un aliasing "anterior" y se pretende hacer una operacion en esa misma linea pero no es reconocido en ese mismo orden. Solucion se ha empleado una CTE donde se define anterior y luego se usa para una operacion que nos da la variacion*/
+
+WITH ingreso_anterior AS (
+SELECT sucursal, mes, ingresos,
+       LAG(ingresos) OVER (
+           PARTITION BY sucursal 
+           ORDER BY mes
+       ) AS anterior
+FROM ingresos_mensuales
+)
+SELECT sucursal, mes, ingresos, anterior,
+	   ingresos - anterior AS variacion
+FROM ingreso_anterior;
 
 
 /* 4. Se quiere traer la población de la medición anterior (por año) de cada país,
@@ -474,9 +574,15 @@ SELECT id_pais, anio, poblacion,
        LAG(poblacion) OVER (PARTITION BY id_pais) AS poblacion_anterior
 FROM poblacion_paises
 ORDER BY id_pais, anio;
-/* razon del error */
+/* razon del error falto el ORDER BY dentro de OVER() esto decide que es anterior*/
 
-
+SELECT id_pais, anio, poblacion,
+       LAG(poblacion) OVER (
+           PARTITION BY id_pais
+           ORDER BY anio
+       ) AS poblacion_anterior
+FROM poblacion_paises
+ORDER BY id_pais, anio;
 
 
 
