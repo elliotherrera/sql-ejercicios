@@ -77,6 +77,9 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 2. Criterio ORDER BY
 3. Funciones LEAD y LAG
 
+## Capitulo 12 Mas Window Functions
+
+1. RANK y DENSE_RANK
 
 
 
