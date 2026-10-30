@@ -80,6 +80,7 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 ## Capitulo 12 Mas Window Functions
 
 1. RANK y DENSE_RANK
+2. NTILE
 
 
 
