@@ -81,6 +81,7 @@ Generacion y resolucion de multiples ejercicios para sentar fuertes bases en la 
 
 1. RANK y DENSE_RANK
 2. NTILE
+3. Funciones de agregacion como funciones de ventana
 
 
 
